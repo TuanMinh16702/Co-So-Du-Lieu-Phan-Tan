@@ -1,0 +1,31 @@
+CREATE PROC [dbo].[SP_ADDBILL]
+	@NgayLap date,
+	@MaNV char(10),
+	@MaKho char(10),
+	@MaHH char(10),
+	@SoLuong int,
+	@DonGia float,
+	@TenKH nvarchar(100),
+	@DiaChi nvarchar(100),
+	@SoDienThoai char(10),
+	@MaCN char(10)
+AS
+SET XACT_ABORT ON
+BEGIN DISTRIBUTED TRANSACTION
+BEGIN
+	DECLARE @NEWMAHD CHAR(10)
+	SET @NEWMAHD = (SELECT CONCAT('DDH' ,COUNT(SoHD) + 1) FROM LINK0.QLVT.DBO.HOADON)
+
+	DECLARE @NEWMAKH CHAR(10)
+	SET @NEWMAKH = (SELECT CONCAT('DDH' ,COUNT(MaKH) + 1) FROM LINK0.QLVT.DBO.KHACHHANG)
+
+	INSERT INTO KhachHang(MaKH,TenKH,DiaChi,SoDienThoai,MaCN)
+	VALUES(@NEWMAHD,@TenKH,@DiaChi,@SoDienThoai,@MaCN)
+
+	INSERT INTO HoaDon(SOHD,NgayLap,MaNV,MAKH,MaKho)
+	VALUES(@NEWMAHD,@NgayLap,@MaNV,@NEWMAKH,@MaKho)
+
+	INSERT INTO ChiTietHoaDon(SoHD,MaHH,SoLuong,DonGia)
+	VALUES(@NEWMAHD,@MaHH,@SoLuong,@DonGia)
+END
+COMMIT TRANSACTION

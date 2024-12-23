@@ -1,0 +1,14 @@
+CREATE PROC [dbo].[SP_GETIMPORT]
+AS
+BEGIN
+	SELECT PN.SoPN, TenHH ,NgayLap = FORMAT(NgayLap,'dd-MM-yyyy'), HOTEN, K.TenKho, MaDDH, SoLuong, DonGia
+	FROM PhieuNhap AS PN
+	JOIN ChiTietPhieuNhap AS CTpn 
+	ON PN.SoPN = CTPN.SoPN
+	JOIN (SELECT MaKho, TenKho FROM Kho) AS K
+	ON K.MaKho = PN.MaKhO
+	JOIN (SELECT MaNV, HOTEN = HO +' ' + TEN FROM NHANVIEN) AS NV
+	ON NV.MaNV = PN.MaNV
+	JOIN HangHoa AS HH
+	ON CTPN.MaHH = HH.MaHH
+END
